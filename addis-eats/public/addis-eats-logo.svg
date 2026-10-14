@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" role="img" aria-labelledby="title">
+  <title id="title">Addis Eats, good food and real flavors</title>
+  <circle cx="27" cy="24" r="21" fill="none" stroke="#e5b838" stroke-width="2.5"/>
+  <path d="M18 10v12m-4-12v7m4-7v7m4-7v7m-4 5v12m16-31c-5 5-6 12-1 17l-2 14" fill="none" stroke="#e5b838" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"/>
+  <text x="59" y="22" fill="#f5f0e8" font-family="Arial, sans-serif" font-size="18" font-weight="800">ADDIS</text>
+  <text x="116" y="22" fill="#e5b838" font-family="Arial, sans-serif" font-size="18" font-weight="800">EATS</text>
+  <text x="60" y="38" fill="#92969d" font-family="Arial, sans-serif" font-size="7.2" font-weight="700" letter-spacing="1.15">GOOD FOOD  &#8226;  REAL FLAVORS</text>
+</svg>
