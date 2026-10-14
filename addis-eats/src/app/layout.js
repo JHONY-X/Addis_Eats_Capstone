@@ -6,7 +6,7 @@ import { getSession } from "@/lib/session";
 import SiteHeader from "./SiteHeader";
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://addis-eats-next-js-five.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://addis-eats-capstone-navy.vercel.app"),
   title: {
     template: "%s | Addis Eats",
     default: "Addis Eats | Food delivery in Addis Ababa",
