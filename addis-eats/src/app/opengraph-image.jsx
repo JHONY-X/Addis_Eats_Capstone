@@ -1,18 +1,33 @@
 import { ImageResponse } from "next/og";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 
-export const alt = "Greek Moussaka from Addis Eats";
+export const alt = "Addis Eats delivery and food";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function OpenGraphImage() {
-  const moussaka = await readFile(join(process.cwd(), "public", "Greek_Moussaka-hero.webp"));
-  const moussakaSource = `data:image/webp;base64,${moussaka.toString("base64")}`;
-
+export default function OpenGraphImage() {
   return new ImageResponse(
-    <div style={{ width: "100%", height: "100%", display: "flex", overflow: "hidden", background: "#111318" }}>
-      <img alt="Greek Moussaka" src={moussakaSource} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "72px",
+        color: "#fff7df",
+        background: "linear-gradient(135deg, #0b1020 0%, #111827 35%, #1a2f4d 100%)",
+        fontFamily: "system-ui, sans-serif",
+      }}
+    >
+      <div style={{ display: "flex", color: "#f3bb39", fontSize: 36, letterSpacing: 4, marginBottom: 24 }}>
+        ADDIS EATS
+      </div>
+      <div style={{ display: "flex", fontSize: 80, fontWeight: 700, lineHeight: 1.05, maxWidth: 920 }}>
+        Authentic Ethiopian flavors, delivered across Addis Ababa
+      </div>
+      <div style={{ display: "flex", color: "#d7e3f5", fontSize: 34, marginTop: 28 }}>
+        Fresh dishes, fast delivery, and cozy cravings.
+      </div>
     </div>,
     size
   );
