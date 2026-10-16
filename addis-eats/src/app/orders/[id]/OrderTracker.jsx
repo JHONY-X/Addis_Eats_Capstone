@@ -1,8 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+
+const DeliveryMap = dynamic(() => import("../../track/[id]/DeliveryMap"), {
+  ssr: false,
+  loading: () => <div className="delivery-map map-placeholder" aria-label="Loading delivery map">Loading map…</div>,
+});
+
+const courierLocation = [9.0192, 38.7613];
+const deliveryLocation = [8.9806, 38.7578];
 
 const STATUS_STEPS = [
   { step: 1, key: "confirmed", label: "Confirmed", icon: "✓" },
@@ -91,6 +100,25 @@ export default function OrderTracker({ initialOrder, orderId }) {
           </span>
         </div>
         <p className="status-desc">{order.statusDescription}</p>
+      </section>
+
+      <section className="order-tracker-map" aria-labelledby="order-map-heading">
+        <div className="order-tracker-map-main">
+          <div className="section-heading-row">
+            <div>
+              <span className="eyebrow">Live route</span>
+              <h2 id="order-map-heading">Follow your delivery</h2>
+            </div>
+            <span className="map-live-label"><span aria-hidden="true" /> Courier location</span>
+          </div>
+          <DeliveryMap courier={courierLocation} destination={deliveryLocation} />
+        </div>
+        <aside className="order-tracker-map-details">
+          <h2>Delivery details</h2>
+          <p><strong>Courier</strong><br />Dawit · Addis Courier Service</p>
+          <p><strong>Destination</strong><br />{order.address}</p>
+          <p className="map-note">The route preview updates with your order status. The destination pin marks your delivery area.</p>
+        </aside>
       </section>
 
       {/* Order Info & Delivery Grid */}
