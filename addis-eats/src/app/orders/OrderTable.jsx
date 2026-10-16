@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { etb, when } from "@/lib/format";
+import ExportOrdersButton from "./ExportOrdersButton";
 
 function getSortHref(sort, page = 1) {
   return `/orders?sort=${sort}&page=${page}`;
@@ -29,9 +30,10 @@ export default function OrderTable({ rows, sort, page, totalPages, totalRows }) 
           ))}
         </div>
 
-        <span className="rows-meta">
-          {totalRows} rows
-        </span>
+        <div className="orders-toolbar-actions">
+          <span className="rows-meta">{totalRows} rows</span>
+          <ExportOrdersButton rows={rows} />
+        </div>
       </div>
 
       <div className="table-wrap">
