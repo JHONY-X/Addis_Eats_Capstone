@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function SignInForm({ next, oauthError = false }) {
+export default function SignInForm({ next }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ export default function SignInForm({ next, oauthError = false }) {
 
   return (
     <>
-      <form className="signin-form" onSubmit={handleSubmit} noValidate>
+      <form className="signin-form" onSubmit={handleSubmit}>
         <label>
           Email
           <input
@@ -67,18 +67,6 @@ export default function SignInForm({ next, oauthError = false }) {
           {isSubmitting ? "Signing in…" : "Sign In"}
         </button>
       </form>
-      <p className="signin-divider">or</p>
-      {oauthError && (
-        <p className="field-error" role="alert">
-          Google sign-in could not be completed. Check the provider setup and try again.
-        </p>
-      )}
-      <a
-        className="google-signin-button"
-        href={`/api/auth/google?next=${encodeURIComponent(next)}`}
-      >
-        Continue with Google
-      </a>
     </>
   );
 }

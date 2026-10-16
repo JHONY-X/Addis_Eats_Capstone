@@ -26,7 +26,7 @@ export default async function SignInPage({ searchParams }) {
         <span className="eyebrow">Welcome Back</span>
         <h1>Sign in to Addis Eats</h1>
         <p>Enter your credentials to access your account.</p>
-        <SignInForm next={next} oauthError={sp?.oauthError === "1"} />
+        <SignInForm next={next} />
       </div>
     </main>
   );
