@@ -1,5 +1,7 @@
 import RevenueChart from "./RevenueChart";
 import { getAllOrders } from "@/lib/orders";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 const currency = new Intl.NumberFormat("en-ET", {
   style: "currency",
@@ -76,6 +78,11 @@ function aggregateOrdersByDay(orders) {
 }
 
 export default async function DashboardPage() {
+  const session = await getSession();
+  if (!session || session.role !== "staff") {
+    redirect("/");
+  }
+
   const orders = getAllOrders();
   const revenueByNeighborhood = aggregateRevenueByNeighborhood(orders);
   const ordersByDay = aggregateOrdersByDay(orders);
