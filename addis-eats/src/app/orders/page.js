@@ -1,6 +1,8 @@
 import { getAllOrders } from "@/lib/orders";
 import { etb } from "@/lib/format";
 import OrderTable from "./OrderTable";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 function calculateOrderTotal(order) {
   return (order.items || []).reduce((sum, item) => {
@@ -25,6 +27,11 @@ function getRowsFromOrders(orders) {
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage({ searchParams }) {
+  const session = await getSession();
+  if (!session || session.role !== "staff") {
+    redirect("/");
+  }
+
   const params = await searchParams;
   const forceState = params?.state;
 
