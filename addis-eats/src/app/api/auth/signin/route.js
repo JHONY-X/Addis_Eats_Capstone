@@ -1,5 +1,4 @@
-import { signIn, SESSION_COOKIE_NAME, sessionCookieOptions } from "@/lib/session";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,20 +10,33 @@ export async function POST(request) {
     return Response.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }
 
-  const { email, password } = body;
+  const { email, password } = body || {};
 
   if (!email || !password) {
     return Response.json({ error: "Email and password are required." }, { status: 400 });
   }
 
-  const result = await signIn(email.trim(), password);
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password,
+  });
 
-  if (!result) {
+  if (error || !data.user) {
     return Response.json({ error: "Invalid email or password." }, { status: 401 });
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, result.sessionId, sessionCookieOptions());
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", data.user.id)
+    .maybeSingle();
 
-  return Response.json({ user: result.user }, { status: 200 });
+  return Response.json({
+    user: {
+      id: data.user.id,
+      name: profile?.full_name || data.user.user_metadata?.full_name || email.split("@")[0],
+      role: profile?.role === "staff" ? "staff" : "customer",
+    },
+  }, { status: 200 });
 }

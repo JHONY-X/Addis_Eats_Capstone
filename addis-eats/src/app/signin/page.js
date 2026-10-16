@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getSession, users } from "@/lib/session";
+import { getSession } from "@/lib/session";
+import { safeNextPath } from "@/lib/safe-next-path";
 import SignInForm from "./SignInForm";
 
 export const dynamic = "force-dynamic";
@@ -11,11 +12,7 @@ export const metadata = {
 
 export default async function SignInPage({ searchParams }) {
   const sp = await searchParams;
-  // Validate the `next` parameter — must start with single "/" to prevent open-redirect attacks
-  let next = sp?.next || "/";
-  if (typeof next !== "string" || !next.startsWith("/") || next.startsWith("//")) {
-    next = "/";
-  }
+  const next = safeNextPath(sp?.next);
 
   // If the user is already signed in, redirect to their intended destination
   const session = await getSession();
@@ -29,10 +26,7 @@ export default async function SignInPage({ searchParams }) {
         <span className="eyebrow">Welcome Back</span>
         <h1>Sign in to Addis Eats</h1>
         <p>Enter your credentials to access your account.</p>
-        <SignInForm
-          next={next}
-          users={users.map((u) => ({ email: u.email, name: u.name, role: u.role, password: u.password }))}
-        />
+        <SignInForm next={next} oauthError={sp?.oauthError === "1"} />
       </div>
     </main>
   );

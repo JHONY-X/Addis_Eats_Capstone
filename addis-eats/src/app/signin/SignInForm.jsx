@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-export default function SignInForm({ next, users = [] }) {
-  const router = useRouter();
+export default function SignInForm({ next, oauthError = false }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -47,7 +45,7 @@ export default function SignInForm({ next, users = [] }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="almaz@addis-eats.com"
+            placeholder="you@example.com"
             autoComplete="email"
             required
           />
@@ -69,30 +67,18 @@ export default function SignInForm({ next, users = [] }) {
           {isSubmitting ? "Signing in…" : "Sign In"}
         </button>
       </form>
-
-      {users.length > 0 && (
-        <div className="demo-accounts">
-          <h3>Demo Accounts (Click to Fill)</h3>
-          <ul>
-            {users.map((u) => (
-              <li key={u.email}>
-                <button
-                  type="button"
-                  className="demo-account-btn"
-                  onClick={() => {
-                    setEmail(u.email);
-                    setPassword(u.password);
-                  }}
-                >
-                  <strong>{u.name}</strong>
-                  <span className="demo-role">{u.role}</span>
-                  <span className="demo-email">{u.email}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <p className="signin-divider">or</p>
+      {oauthError && (
+        <p className="field-error" role="alert">
+          Google sign-in could not be completed. Check the provider setup and try again.
+        </p>
       )}
+      <a
+        className="google-signin-button"
+        href={`/api/auth/google?next=${encodeURIComponent(next)}`}
+      >
+        Continue with Google
+      </a>
     </>
   );
 }

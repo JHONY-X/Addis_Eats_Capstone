@@ -1,16 +1,27 @@
 // src/proxy.js
 import { NextResponse } from "next/server";
+import { updateSession } from "@/lib/supabase/proxy";
 
-export function proxy(request) {
-  const session = request.cookies.get("session");
+export async function proxy(request) {
+  const { response, claims } = await updateSession(request);
 
-  if (!session) {
-    const url = new URL("/signin", request.url);
-    url.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+  if (!claims) {
+    const url = request.nextUrl.clone();
+    const next = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    url.pathname = "/signin";
+    url.search = "";
+    url.searchParams.set("next", next);
+
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie));
+    for (const header of ["cache-control", "expires", "pragma"]) {
+      const value = response.headers.get(header);
+      if (value) redirectResponse.headers.set(header, value);
+    }
+    return redirectResponse;
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
