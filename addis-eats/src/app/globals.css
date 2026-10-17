@@ -1467,6 +1467,11 @@ body:has(.home-page) .site-footer { display: none; }
 .signin-form input { width: 100%; border: 1px solid var(--border); border-radius: .4rem; padding: .75rem; background: rgba(255,255,255,0.04); color: var(--text-primary); font: inherit; transition: border-color .2s, box-shadow .2s; }
 .signin-form input:focus { outline: none; border-color: var(--gold-muted); box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1); }
 .signin-form .add-to-cart { margin-top: .5rem; }
+.signin-divider { display: flex; align-items: center; gap: .8rem; margin: 1.25rem 0; color: var(--text-tertiary); font-size: .78rem; }
+.signin-divider::before, .signin-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.google-signin-button { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: .65rem; border: 1px solid rgba(255,255,255,.2); border-radius: .4rem; background: #fff; color: #252525; font-size: .9rem; font-weight: 700; transition: background .15s ease, border-color .15s ease; }
+.google-signin-button:hover { background: #f1f1f1; border-color: #fff; }
+.google-signin-mark { color: #4285f4; font-size: 1.15rem; font-weight: 800; }
 
 .demo-accounts { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); }
 .demo-accounts h3 { margin: 0 0 .75rem; font-size: .95rem; color: var(--text-secondary); }

@@ -13,6 +13,7 @@ export const metadata = {
 export default async function SignInPage({ searchParams }) {
   const sp = await searchParams;
   const next = safeNextPath(sp?.next);
+  const googleSignInError = sp?.error === "google";
 
   // If the user is already signed in, redirect to their intended destination
   const session = await getSession();
@@ -26,7 +27,7 @@ export default async function SignInPage({ searchParams }) {
         <span className="eyebrow">Welcome Back</span>
         <h1>Sign in to Addis Eats</h1>
         <p>Enter your credentials to access your account.</p>
-        <SignInForm next={next} />
+        <SignInForm next={next} googleSignInError={googleSignInError} />
       </div>
     </main>
   );

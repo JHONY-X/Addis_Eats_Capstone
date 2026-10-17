@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 
-export default function SignInForm({ next }) {
+export default function SignInForm({ next, googleSignInError }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    googleSignInError ? "Google sign-in could not be completed. Please try again." : "",
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event) {
@@ -67,6 +69,14 @@ export default function SignInForm({ next }) {
           {isSubmitting ? "Signing in…" : "Sign In"}
         </button>
       </form>
+      <div className="signin-divider"><span>or</span></div>
+      <a
+        className="google-signin-button"
+        href={`/api/auth/google?next=${encodeURIComponent(next)}`}
+      >
+        <span className="google-signin-mark" aria-hidden="true">G</span>
+        Continue with Google
+      </a>
     </>
   );
 }
