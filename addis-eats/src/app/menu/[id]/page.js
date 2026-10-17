@@ -48,7 +48,7 @@ export default async function DishPage({ params }) {
         <Link className="button secondary-btn back-to-menu" href="/menu">
           ← Back to menu
         </Link>
-        <Image src={dish.image} alt={`Photo of ${dish.name}`} width={900} height={600} priority />
+        <Image src={dish.image} alt={`Photo of ${dish.name}`} width={900} height={600} priority loading="eager" />
         <p className="eyebrow">{dish.cuisine}</p>
         <h1>{dish.name}</h1>
         <p>{dish.summary}</p>

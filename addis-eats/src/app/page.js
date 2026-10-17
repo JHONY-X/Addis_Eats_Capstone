@@ -59,6 +59,7 @@ export default async function HomePage() {
                   width={440}
                   height={280}
                   priority
+                  loading="eager"
                   sizes="(max-width: 760px) 100vw, 42vw"
                   style={{ objectFit: "cover", width: "100%", height: "100%" }}
                 />

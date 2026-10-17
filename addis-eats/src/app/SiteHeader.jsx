@@ -31,7 +31,7 @@ export default function SiteHeader({ session }) {
       </button>
 
       <Link aria-label="Addis Eats home" className="brand" href="/" onClick={closeMenus}>
-        <Image alt="Addis Eats, good food and real flavors" height={56} priority src="/addis-eats-logo.svg" width={250} />
+        <Image alt="Addis Eats, good food and real flavors" height={56} priority loading="eager" src="/addis-eats-logo.svg" width={250} />
       </Link>
 
       <nav

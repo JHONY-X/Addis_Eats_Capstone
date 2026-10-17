@@ -6,6 +6,14 @@ Authentication uses Supabase Auth with cookie-based SSR sessions.
 
 Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` using the values from the Supabase project's Connect dialog. `.env.local` is gitignored. Never add a Supabase secret/service-role key to a `NEXT_PUBLIC_` variable.
 
+## Google Sign-In Setup
+
+1. In Google Cloud Console, create an OAuth client ID for a web application. Add the Supabase project's Auth callback URL (shown in Supabase under **Authentication > Sign In / Providers > Google**) as an authorized redirect URI.
+2. In Supabase, enable the Google provider and enter the Google client ID and client secret.
+3. In Supabase **Authentication > URL Configuration**, add the app callback to the redirect allow list: `http://localhost:3000/auth/callback` for local development and `https://your-domain/auth/callback` for production.
+
+The app starts OAuth at `/api/auth/google` and exchanges the returned code at `/auth/callback`; no Google credentials belong in the app's environment variables.
+
 Install dependencies with `npm install` if needed.
 
 ## Database Setup
@@ -29,17 +37,8 @@ Do not grant staff through user-editable Auth metadata or client code.
 - `src/lib/supabase/server.js` creates a request-scoped Supabase server client and reads/writes Auth cookies.
 - `src/lib/supabase/proxy.js` refreshes tokens and verifies claims in the Next.js 16 Proxy.
 - `src/lib/session.js` verifies the user with Supabase and loads the role from `public.profiles`; missing or unrecognized roles default to `customer`.
-- `/api/auth/signin` uses `signInWithPassword`; `/api/auth/signout` revokes the Supabase session.
-- `/api/auth/google` starts Google OAuth and `/auth/callback` exchanges the authorization code for a cookie-backed session.
+- `/api/auth/signin` uses `signInWithPassword`; `/api/auth/google` starts Google OAuth and `/auth/callback` exchanges the returned code for a Supabase session; `/api/auth/signout` revokes the Supabase session.
 - The sign-in page validates the `next` destination to prevent open redirects.
-
-## Google Provider Setup
-
-1. In Google Cloud Console, create an OAuth client ID for a Web application.
-2. Add `https://<your-project-ref>.supabase.co/auth/v1/callback` as an authorized redirect URI in Google Cloud.
-3. In Supabase, open **Authentication → Sign In / Providers → Google**, enable Google, and enter the Google client ID and client secret.
-4. In Supabase **Authentication → URL Configuration**, set the local Site URL to `http://localhost:3000` and add `http://localhost:3000/auth/callback` to the allowed redirect URLs. Add the production callback URL when deploying.
-5. Sign in at `/signin` with the Google account. To receive staff access, its email must match the account granted the `staff` role in `public.profiles`.
 
 ## Authorization
 
