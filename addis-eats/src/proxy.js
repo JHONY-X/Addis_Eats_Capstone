@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request) {
-  const { response, claims } = await updateSession(request);
+  const { response, user } = await updateSession(request);
 
-  if (!claims) {
+  if (!user) {
     const url = request.nextUrl.clone();
     const next = `${request.nextUrl.pathname}${request.nextUrl.search}`;
     url.pathname = "/signin";
