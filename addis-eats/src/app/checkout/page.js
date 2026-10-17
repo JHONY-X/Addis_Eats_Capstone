@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import CheckoutForm from "./CheckoutForm";
-import { getSession } from "@/lib/session";
+import { requireSession } from "@/lib/auth-guard";
 
 export const metadata = {
   title: "Checkout",
@@ -13,10 +12,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage() {
-  const [session, requestHeaders] = await Promise.all([getSession(), headers()]);
-  // The proxy is only a fast cookie-presence gate. Validate the session again
-  // in the server component before rendering any protected checkout UI.
-  if (!session) redirect("/signin?next=/checkout");
+  const [, requestHeaders] = await Promise.all([requireSession("/signin?next=/checkout"), headers()]);
   const locale = requestHeaders.get("accept-language")?.split(",")[0] || "en";
   return <main className="checkout"><p className="eyebrow">Secure checkout</p><h1>Almost time to eat.</h1><p>Review your dishes, then tell us where to deliver them.</p><CheckoutForm locale={locale} /></main>;
 }

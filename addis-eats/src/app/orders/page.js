@@ -1,8 +1,8 @@
 import { getAllOrders } from "@/lib/orders";
 import { etb } from "@/lib/format";
 import OrderTable from "./OrderTable";
-import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { requireSession } from "@/lib/auth-guard";
 
 function calculateOrderTotal(order) {
   return (order.items || []).reduce((sum, item) => {
@@ -27,8 +27,8 @@ function getRowsFromOrders(orders) {
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage({ searchParams }) {
-  const session = await getSession();
-  if (!session || session.role !== "staff") {
+  const session = await requireSession("/signin?next=/orders");
+  if (session.role !== "staff") {
     redirect("/");
   }
 

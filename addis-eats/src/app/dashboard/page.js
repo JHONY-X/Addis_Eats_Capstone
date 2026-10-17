@@ -1,6 +1,6 @@
 import RevenueChart from "./RevenueChart";
 import { getAllOrders } from "@/lib/orders";
-import { getSession } from "@/lib/session";
+import { requireSession } from "@/lib/auth-guard";
 import { redirect } from "next/navigation";
 
 const currency = new Intl.NumberFormat("en-ET", {
@@ -78,8 +78,8 @@ function aggregateOrdersByDay(orders) {
 }
 
 export default async function DashboardPage() {
-  const session = await getSession();
-  if (!session || session.role !== "staff") {
+  const session = await requireSession("/signin?next=/dashboard");
+  if (session.role !== "staff") {
     redirect("/");
   }
 

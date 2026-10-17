@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { requireSession } from "@/lib/auth-guard";
 import { getAllOrders } from "@/lib/orders";
 
 export const dynamic = "force-dynamic";
@@ -11,10 +11,10 @@ export const metadata = {
 };
 
 export default async function KitchenPage() {
-  const session = await getSession();
+  const session = await requireSession("/signin?next=/kitchen");
 
   // Server-side role check — never trust middleware alone
-  if (!session || session.role !== "staff") {
+  if (session.role !== "staff") {
     redirect("/");
   }
 

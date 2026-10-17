@@ -76,6 +76,9 @@ export default function CheckoutForm({ locale }) {
           <Link className="button" href={`/orders/${confirmation.id}`}>
             Track Live Order Status (Polling) →
           </Link>
+          <Link className="button" href={`/track/${confirmation.id}`}>
+            Track Live (SSE) →
+          </Link>
           <Link className="button secondary-btn" href="/menu">
             Order more dishes
           </Link>
