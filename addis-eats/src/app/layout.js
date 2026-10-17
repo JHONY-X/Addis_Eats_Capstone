@@ -23,10 +23,10 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body>
+      <body className="flex flex-col min-h-screen">
         <Providers>
           <SiteHeader session={session} />
-          {children}
+          <main className="flex-grow">{children}</main>
           <footer className="site-footer">© 2026 Addis Eats · Made with Ethiopian flavour</footer>
         </Providers>
 
