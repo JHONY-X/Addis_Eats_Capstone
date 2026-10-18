@@ -1,7 +1,5 @@
 import { findDish } from "@/app/menu/dishes";
-
-// In-memory store for orders across the server lifecycle
-const ordersStore = globalThis.__ordersStore ?? (globalThis.__ordersStore = new Map());
+import { createClient } from "@/lib/supabase/server";
 
 // Helper to determine status and step from elapsed time
 export function calculateOrderStatus(createdAtISO) {
@@ -47,44 +45,16 @@ export function calculateOrderStatus(createdAtISO) {
   }
 }
 
-// Pre-seed demo orders so testing works out of the box
-function initDemoOrders() {
-  const demoOrders = [
-    {
-      id: "ord-demo-42",
-      userId: "usr_1",
-      customerName: "Almaz",
-      address: "Bole Medhanialem, House 402, Addis Ababa",
-      phone: "+251 91 123 4567",
-      items: [
-        { dishId: 1, name: "Classic Margherita Pizza", quantity: 2, price: 300 },
-        { dishId: 2, name: "Vegetarian Stir-Fry", quantity: 1, price: 250 },
-      ],
-      createdAt: new Date(Date.now() - 12000).toISOString(),
-    },
-    {
-      id: "sample-1",
-      userId: "usr_2",
-      customerName: "Dawit",
-      address: "Kazanchis, Near ECA Building, Addis Ababa",
-      phone: "+251 92 456 7890",
-      items: [
-        { dishId: 3, name: "Chocolate Chip Cookies", quantity: 3, price: 120 },
-      ],
-      createdAt: new Date(Date.now() - 2000).toISOString(),
-    },
-  ];
-
-  for (const ord of demoOrders) {
-    if (!ordersStore.has(ord.id)) {
-      ordersStore.set(ord.id, ord);
-    }
-  }
+function fromRow(row) {
+  return { id: row.id, userId: row.user_id, customerName: row.customer_name, address: row.address, phone: row.phone, items: row.items || [], createdAt: row.created_at };
 }
 
-initDemoOrders();
+function withLiveStatus(order) {
+  const liveState = calculateOrderStatus(order.createdAt);
+  return { ...order, status: liveState.status, statusStep: liveState.step, statusTitle: liveState.statusTitle, statusDescription: liveState.description, estimatedMinutes: liveState.estimatedMinutes, progressPercent: liveState.progressPercent, lastPolledAt: new Date().toISOString() };
+}
 
-export function saveOrder(orderData) {
+export async function saveOrder(orderData) {
   const id = orderData.id || crypto.randomUUID();
   const createdAt = orderData.createdAt || new Date().toISOString();
 
@@ -101,51 +71,37 @@ export function saveOrder(orderData) {
     };
   });
 
-  const order = {
-    ...orderData,
-    id,
-    items: enrichedItems,
-    createdAt,
-  };
-
-  ordersStore.set(id, order);
-  return getOrder(id);
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("orders").insert({ id, user_id: orderData.userId, customer_name: orderData.customerName, address: orderData.address, phone: orderData.phone, items: enrichedItems, created_at: createdAt }).select().single();
+  if (error) throw new Error(`Could not save order: ${error.message}`);
+  return withLiveStatus(fromRow(data));
 }
 
-export function getOrder(id) {
+export async function getOrder(id) {
   if (!id) return null;
-  const order = ordersStore.get(id);
-  // Never manufacture an order for an unrecognised URL. Doing so would make a
-  // guessed identifier look valid and could expose a guest-shaped order record.
-  if (!order) return null;
-
-  const liveState = calculateOrderStatus(order.createdAt);
-
-  return {
-    ...order,
-    status: liveState.status,
-    statusStep: liveState.step,
-    statusTitle: liveState.statusTitle,
-    statusDescription: liveState.description,
-    estimatedMinutes: liveState.estimatedMinutes,
-    progressPercent: liveState.progressPercent,
-    lastPolledAt: new Date().toISOString(),
-  };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("orders").select().eq("id", id).maybeSingle();
+  if (error || !data) return null;
+  return withLiveStatus(fromRow(data));
 }
 
 /**
  * Get all orders — used by the staff kitchen dashboard.
  */
-export function getAllOrders() {
-  return [...ordersStore.keys()].map((id) => getOrder(id));
+export async function getAllOrders() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("orders").select().order("created_at", { ascending: false });
+  if (error) return [];
+  return (data || []).map((row) => withLiveStatus(fromRow(row)));
 }
 
 /**
  * Get orders filtered by userId — used to scope the orders page query
  * so a user cannot read another account's orders.
  */
-export function getOrdersByUser(userId) {
-  return [...ordersStore.entries()]
-    .filter(([, order]) => order.userId === userId)
-    .map(([id]) => getOrder(id));
+export async function getOrdersByUser(userId) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("orders").select().eq("user_id", userId).order("created_at", { ascending: false });
+  if (error) return [];
+  return (data || []).map((row) => withLiveStatus(fromRow(row)));
 }
