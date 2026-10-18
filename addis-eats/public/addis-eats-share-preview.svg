@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Addis Eats</title>
+  <desc id="description">Good food. Real flavors. Order online in Addis Ababa.</desc>
+  <defs>
+    <pattern id="grain" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M0 48 48 0M-12 12 12-12M36 60 60 36" fill="none" stroke="#f5f0e8" stroke-opacity=".035" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#0a0c10"/>
+  <rect width="1200" height="630" fill="url(#grain)"/>
+  <path d="M0 0h18v630H0z" fill="#d85a2a"/>
+  <circle cx="1036" cy="316" r="239" fill="none" stroke="#e5b838" stroke-opacity=".13" stroke-width="1.5"/>
+  <circle cx="1036" cy="316" r="192" fill="none" stroke="#e5b838" stroke-opacity=".2" stroke-width="1.5"/>
+  <circle cx="1036" cy="316" r="143" fill="#181b22" stroke="#c9a84c" stroke-opacity=".55" stroke-width="2"/>
+  <text x="1036" y="345" text-anchor="middle" fill="#e5b838" font-family="Georgia, 'Times New Roman', serif" font-size="82" font-weight="700">AE</text>
+  <text x="88" y="203" fill="#e5b838" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="5">ADDIS ABABA</text>
+  <text x="82" y="323" fill="#f5f0e8" font-family="Arial, Helvetica, sans-serif" font-size="102" font-weight="800" letter-spacing="0">ADDIS</text>
+  <text x="421" y="323" fill="#e5b838" font-family="Arial, Helvetica, sans-serif" font-size="102" font-weight="800">EATS</text>
+  <path d="M89 367h525" fill="none" stroke="#d85a2a" stroke-width="5"/>
+  <text x="88" y="427" fill="#f5f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="39" font-weight="400">Good food. Real flavors.</text>
+  <text x="90" y="486" fill="#a5a7ad" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="1.5">ORDER ONLINE  &#8226;  ADDIS ABABA</text>
+  <text x="90" y="566" fill="#727680" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" letter-spacing="3">ADDIS EATS</text>
+</svg>
