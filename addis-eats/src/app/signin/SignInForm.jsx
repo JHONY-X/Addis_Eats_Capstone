@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function SignInForm({ next, googleSignInError }) {
   const [email, setEmail] = useState("");
@@ -69,6 +70,7 @@ export default function SignInForm({ next, googleSignInError }) {
           {isSubmitting ? "Signing in…" : "Sign In"}
         </button>
       </form>
+      <p className="signin-help"><Link href="/forgot-password">Forgot your password?</Link></p>
       <div className="signin-divider"><span>or</span></div>
       <a
         className="google-signin-button"

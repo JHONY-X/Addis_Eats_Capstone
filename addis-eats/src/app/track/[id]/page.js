@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function TrackOrderPage({ params }) {
   const { id } = await params;
   const session = await requireSession(`/signin?next=/track/${id}`);
-  const order = getOrder(id);
+  const order = await getOrder(id);
 
   // On serverless platforms the in-memory order store can be empty after a cold
   // start. Instead of a hard 404, show a friendly "order expired" message.

@@ -15,5 +15,5 @@ export async function GET() {
     return Response.json({ error: "Staff access is required." }, { status: 403 });
   }
 
-  return Response.json({ orders: getAllOrders() });
+  return Response.json({ orders: await getAllOrders() });
 }

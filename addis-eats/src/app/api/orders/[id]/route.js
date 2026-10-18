@@ -12,7 +12,7 @@ export async function GET(_request, { params }) {
     return Response.json({ error: "You must be signed in." }, { status: 401 });
   }
 
-  const order = getOrder(id);
+  const order = await getOrder(id);
 
   if (!order) {
     return Response.json({ error: "Order not found" }, { status: 404 });

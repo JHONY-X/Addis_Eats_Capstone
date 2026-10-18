@@ -39,7 +39,7 @@ export default async function OrdersPage({ searchParams }) {
     throw new Error("Demo order table failure for exercise coverage.");
   }
 
-  const orders = getAllOrders();
+  const orders = await getAllOrders();
   const allRows = getRowsFromOrders(orders);
 
   if (forceState === "empty") {

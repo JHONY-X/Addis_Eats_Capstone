@@ -25,7 +25,7 @@ export async function POST(request) {
   const unknownDish = parsed.data.items.find((item) => !findDish(item.dishId));
   if (unknownDish) return Response.json({ fieldErrors: { items: [`Dish ${unknownDish.dishId} does not exist.`] } }, { status: 422 });
 
-  const order = saveOrder({
+  const order = await saveOrder({
     id: crypto.randomUUID(),
     userId: session.id,
     ...parsed.data,

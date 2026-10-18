@@ -18,7 +18,7 @@ export default async function KitchenPage() {
     redirect("/");
   }
 
-  const orders = getAllOrders();
+  const orders = await getAllOrders();
 
   return (
     <main className="kitchen-page">

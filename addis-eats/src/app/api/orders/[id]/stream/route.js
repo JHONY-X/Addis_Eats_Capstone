@@ -16,7 +16,7 @@ const sse = (event, payload) => encoder.encode(`event: ${event}\ndata: ${JSON.st
 export async function GET(_request, { params }) {
   const { id } = await params;
   const session = await getSession();
-  const order = getOrder(id);
+  const order = await getOrder(id);
   if (!session) return Response.json({ error: "You must be signed in." }, { status: 401 });
   if (!order) return Response.json({ error: "Order not found." }, { status: 404 });
   if (order.userId && order.userId !== session.id && session.role !== "staff") return Response.json({ error: "You do not have permission to view this order." }, { status: 403 });

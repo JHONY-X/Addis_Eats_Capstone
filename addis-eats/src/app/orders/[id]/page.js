@@ -22,7 +22,7 @@ export default async function OrderStatusPage({ params }) {
   // Ownership check: must be signed in, and must own the order (or be staff)
   const session = await requireSession(`/signin?next=/orders/${id}`);
 
-  const initialOrder = getOrder(id);
+  const initialOrder = await getOrder(id);
 
   // On serverless platforms the in-memory order store can be empty after a cold
   // start. Instead of a hard 404, show a friendly "order expired" message so the

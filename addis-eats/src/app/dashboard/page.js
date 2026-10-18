@@ -83,7 +83,7 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  const orders = getAllOrders();
+  const orders = await getAllOrders();
   const revenueByNeighborhood = aggregateRevenueByNeighborhood(orders);
   const ordersByDay = aggregateOrdersByDay(orders);
   const totalRevenue = revenueByNeighborhood.reduce((sum, item) => sum + item.revenue, 0);

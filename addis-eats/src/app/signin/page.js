@@ -14,6 +14,7 @@ export default async function SignInPage({ searchParams }) {
   const sp = await searchParams;
   const next = safeNextPath(sp?.next);
   const googleSignInError = sp?.error === "google";
+  const resetSuccess = sp?.reset === "success";
 
   // If the user is already signed in, redirect to their intended destination
   const session = await getSession();
@@ -27,6 +28,7 @@ export default async function SignInPage({ searchParams }) {
         <span className="eyebrow">Welcome Back</span>
         <h1>Sign in to Addis Eats</h1>
         <p>Enter your credentials to access your account.</p>
+        {resetSuccess && <p className="form-success">Your password was updated. You can sign in now.</p>}
         <SignInForm next={next} googleSignInError={googleSignInError} />
       </div>
     </main>
