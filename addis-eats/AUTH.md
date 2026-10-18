@@ -20,6 +20,8 @@ Install dependencies with `npm install` if needed.
 
 Run `supabase/migrations/20261016000000_create_profiles.sql` in the Supabase SQL Editor. It creates a profile for each existing Auth user, creates profiles for future users, and enables row-level security so users can only read their own profile. New users default to the `customer` role.
 
+After the existing `public.orders` table is available, also run `supabase/migrations/20261018000000_add_order_cancellation.sql`. It adds the cancellation timestamp and an owner-scoped database function that only cancels orders before courier dispatch.
+
 Create users from **Authentication → Users**. To grant staff access, use the SQL Editor with the user's actual email:
 
 ```sql
@@ -44,4 +46,4 @@ Do not grant staff through user-editable Auth metadata or client code.
 
 The Proxy redirects unauthenticated visitors from `/checkout`, `/orders`, `/kitchen`, and `/dashboard` to sign in. Server components and API routes must continue calling `getSession()` and enforce ownership or staff-role checks themselves; the Proxy is not the authorization boundary for private data.
 
-Orders are still stored in the app's existing in-memory store. Supabase Auth does not make order data persistent; move orders to a database separately if persistence is required.
+Order data is stored in the existing `public.orders` table. The cancellation migration must be applied before customers can use the cancel action.

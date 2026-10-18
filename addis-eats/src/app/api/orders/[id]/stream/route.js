@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const STATUS_FLOW = [
+  ["cancelled", "Order cancelled", "This order was cancelled by the customer."],
   ["confirmed", "Order confirmed", "The kitchen has received your order."],
   ["preparing", "Preparing your meal", "Your dishes are being freshly prepared."],
   ["out_for_delivery", "Courier is on the way", "Dawit is travelling to your delivery address."],
@@ -29,7 +30,7 @@ export async function GET(_request, { params }) {
       const sendNext = () => {
         const [status, title, message] = STATUS_FLOW[index];
         controller.enqueue(sse("status", { status, title, message, at: new Date().toISOString() }));
-        if (status === "delivered") return controller.close();
+        if (status === "delivered" || status === "cancelled") return controller.close();
         index += 1;
         timer = setTimeout(sendNext, 4_000);
       };

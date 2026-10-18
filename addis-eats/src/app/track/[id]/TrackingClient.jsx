@@ -23,8 +23,8 @@ export default function TrackingClient({ order, orderId }) {
     source.addEventListener("status", (event) => {
       const update = JSON.parse(event.data);
       setHistory((items) => items.some((item) => item.status === update.status) ? items : [...items, update]);
-      if (update.status === "delivered") {
-        setConnection("complete");
+      if (update.status === "delivered" || update.status === "cancelled") {
+        setConnection(update.status === "cancelled" ? "cancelled" : "complete");
         source.close();
       }
     });
@@ -44,13 +44,13 @@ export default function TrackingClient({ order, orderId }) {
   return <div className="tracking-page">
     <div className="tracking-heading">
       <div><p className="eyebrow">Addis Eats delivery</p><h1>Track order #{order.id.slice(0, 8)}</h1><p>Placed {when(order.createdAt)} · {relative(order.createdAt)}</p></div>
-      <p className={`stream-state ${connection}`} aria-live="polite"><span />{connection === "connected" ? "Live updates connected" : connection === "complete" ? "Delivery complete" : connection === "reconnecting" ? "Reconnecting…" : "Connecting…"}</p>
+      <p className={`stream-state ${connection}`} aria-live="polite"><span />{connection === "connected" ? "Live updates connected" : connection === "complete" ? "Delivery complete" : connection === "cancelled" ? "Order cancelled" : connection === "reconnecting" ? "Reconnecting…" : "Connecting…"}</p>
     </div>
 
-    <section className="tracking-map-section" aria-labelledby="map-heading">
+    {history.at(-1)?.status !== "cancelled" && <section className="tracking-map-section" aria-labelledby="map-heading">
       <div><h2 id="map-heading">Your delivery route</h2><DeliveryMap courier={courier} destination={destination} /></div>
       <aside className="map-alternative"><h2>Delivery details</h2><p><strong>Courier:</strong> Dawit, on a motorbike near Bole.</p><p><strong>Destination:</strong> {order.address}</p><p className="map-note">The map shows the courier and delivery address. Live status updates are also listed below.</p></aside>
-    </section>
+    </section>}
 
     <section className="tracking-card"><div><h2>Order summary</h2><p>{order.items?.map((item) => `${item.quantity} × ${item.name}`).join(", ")}</p></div><strong>{etb(total)}</strong></section>
 

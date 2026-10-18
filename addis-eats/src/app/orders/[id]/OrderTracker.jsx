@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
@@ -20,7 +21,7 @@ const STATUS_STEPS = [
   { step: 4, key: "delivered", label: "Delivered", icon: "🍽️" },
 ];
 
-export default function OrderTracker({ initialOrder, orderId }) {
+export default function OrderTracker({ initialOrder, orderId, canCancel }) {
   // Query key: /api/orders/${orderId}
   // Refresh rule: refreshInterval = 5000ms (polls every 5s)
   // Initial seeding: fallbackData prevents loading spinner on first paint!
@@ -29,11 +30,13 @@ export default function OrderTracker({ initialOrder, orderId }) {
     fetcher,
     {
       fallbackData: { order: initialOrder },
-      refreshInterval: 5000,
+      refreshInterval: (latestData) => latestData?.order?.status === "cancelled" ? 0 : 5000,
       revalidateOnFocus: true,
       dedupingInterval: 2000,
     }
   );
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
 
   const lastCheckTime = data?.order?.lastPolledAt
     ? new Date(data.order.lastPolledAt).toLocaleTimeString()
@@ -42,6 +45,24 @@ export default function OrderTracker({ initialOrder, orderId }) {
   const order = data?.order || initialOrder;
   const currentStep = order?.statusStep || 1;
   const isComplete = order?.status === "delivered";
+  const isCancelled = order?.status === "cancelled";
+
+  async function handleCancelOrder() {
+    if (!window.confirm("Cancel this order? This cannot be undone.")) return;
+    setIsCancelling(true);
+    setCancelError("");
+
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, { method: "DELETE" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not cancel this order.");
+      await mutate({ order: result.order }, { revalidate: false });
+    } catch (error) {
+      setCancelError(error.message);
+    } finally {
+      setIsCancelling(false);
+    }
+  }
 
   return (
     <div className="order-tracker-view">
@@ -64,7 +85,7 @@ export default function OrderTracker({ initialOrder, orderId }) {
       </div>
 
       {/* Progress Timeline Stepper */}
-      <section className="timeline-section" aria-label="Order progress">
+      {!isCancelled && <section className="timeline-section" aria-label="Order progress">
         <div className="timeline-progress-bar-bg">
           <div
             className="timeline-progress-bar-fill"
@@ -89,20 +110,20 @@ export default function OrderTracker({ initialOrder, orderId }) {
             );
           })}
         </div>
-      </section>
+      </section>}
 
       {/* Live Status Card */}
       <section className="status-detail-card" aria-live="polite">
         <div className="status-main-badge">
           <span className="status-badge-tag">{order.statusTitle || "Processing"}</span>
           <span className="eta-badge">
-            {isComplete ? "Delivered" : `ETA: ~${order.estimatedMinutes || 15} mins`}
+            {isCancelled ? "Cancelled" : isComplete ? "Delivered" : `ETA: ~${order.estimatedMinutes || 15} mins`}
           </span>
         </div>
         <p className="status-desc">{order.statusDescription}</p>
       </section>
 
-      <section className="order-tracker-map" aria-labelledby="order-map-heading">
+      {!isCancelled && <section className="order-tracker-map" aria-labelledby="order-map-heading">
         <div className="order-tracker-map-main">
           <div className="section-heading-row">
             <div>
@@ -119,7 +140,7 @@ export default function OrderTracker({ initialOrder, orderId }) {
           <p><strong>Destination</strong><br />{order.address}</p>
           <p className="map-note">The route preview updates with your order status. The destination pin marks your delivery area.</p>
         </aside>
-      </section>
+      </section>}
 
       {/* Order Info & Delivery Grid */}
       <div className="order-info-grid">
@@ -158,6 +179,11 @@ export default function OrderTracker({ initialOrder, orderId }) {
 
       {/* Action Controls */}
       <div className="order-actions">
+        {canCancel && order.canCancel && (
+          <button type="button" onClick={handleCancelOrder} disabled={isCancelling} className="button cancel-order-btn">
+            {isCancelling ? "Cancelling…" : "Cancel order"}
+          </button>
+        )}
         <button
           type="button"
           onClick={() => mutate()}
@@ -170,6 +196,8 @@ export default function OrderTracker({ initialOrder, orderId }) {
           Browse Menu
         </Link>
       </div>
+
+      {cancelError && <p className="field-error" role="alert">{cancelError}</p>}
 
       {error && (
         <p className="field-error" style={{ marginTop: "1rem" }}>

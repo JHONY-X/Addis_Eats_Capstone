@@ -56,7 +56,7 @@ export default async function OrderStatusPage({ params }) {
 
   return (
     <main className="order-page-wrapper">
-      <OrderTracker initialOrder={initialOrder} orderId={id} />
+      <OrderTracker initialOrder={initialOrder} orderId={id} canCancel={initialOrder.userId === session.id} />
     </main>
   );
 }

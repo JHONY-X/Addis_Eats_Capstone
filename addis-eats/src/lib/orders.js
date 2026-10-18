@@ -46,12 +46,16 @@ export function calculateOrderStatus(createdAtISO) {
 }
 
 function fromRow(row) {
-  return { id: row.id, userId: row.user_id, customerName: row.customer_name, address: row.address, phone: row.phone, items: row.items || [], createdAt: row.created_at };
+  return { id: row.id, userId: row.user_id, customerName: row.customer_name, address: row.address, phone: row.phone, items: row.items || [], createdAt: row.created_at, cancelledAt: row.cancelled_at };
 }
 
 function withLiveStatus(order) {
+  if (order.cancelledAt) {
+    return { ...order, status: "cancelled", canCancel: false, statusStep: 0, statusTitle: "Order Cancelled", statusDescription: "This order was cancelled before courier dispatch.", estimatedMinutes: 0, progressPercent: 0, lastPolledAt: new Date().toISOString() };
+  }
+
   const liveState = calculateOrderStatus(order.createdAt);
-  return { ...order, status: liveState.status, statusStep: liveState.step, statusTitle: liveState.statusTitle, statusDescription: liveState.description, estimatedMinutes: liveState.estimatedMinutes, progressPercent: liveState.progressPercent, lastPolledAt: new Date().toISOString() };
+  return { ...order, ...liveState, canCancel: liveState.status === "confirmed" || liveState.status === "preparing", statusDescription: liveState.description, lastPolledAt: new Date().toISOString() };
 }
 
 export async function saveOrder(orderData) {
@@ -83,6 +87,14 @@ export async function getOrder(id) {
   const { data, error } = await supabase.from("orders").select().eq("id", id).maybeSingle();
   if (error || !data) return null;
   return withLiveStatus(fromRow(data));
+}
+
+export async function cancelOrder(id) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("cancel_order", { p_order_id: id });
+  if (error) throw new Error(`Could not cancel order: ${error.message}`);
+  const row = Array.isArray(data) ? data[0] : data;
+  return row ? withLiveStatus(fromRow(row)) : null;
 }
 
 /**
